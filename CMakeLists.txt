@@ -3,4 +3,4 @@ project(Coursework1 C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(Coursework1 main.c)
+add_executable(Coursework1 SequentialAverage.c)
