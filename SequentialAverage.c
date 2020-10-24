@@ -9,9 +9,13 @@ double calculateMean(double w, double x, double y, double z) {
 }
 
 double *doAveraging(double *arr, int dimension) {
-    double accuracy = 0.01, average;
     bool continueFlag = true;
+    double accuracy = 0.01, average;
     int loopCount = 0;
+
+    // take a copy of the original array so that all the values for the average are the original
+    double *tempArray = (double *) malloc((unsigned) (dimension * dimension) * sizeof(double));
+    tempArray = arr;
 
     while (continueFlag == true) {
         continueFlag = false;
@@ -25,8 +29,11 @@ double *doAveraging(double *arr, int dimension) {
                         arr[dimension * i + (j - 1)]
                 );
 
-                // only back out when we reach the correct precision
-                if (fabs(arr[dimension * i + j] - average) > accuracy) {
+                /**
+                 * only back out when we reach the correct precision
+                 * and replace old center value with the new average
+                 */
+                if (fabs(tempArray[dimension * i + j] - average) > accuracy) {
                     arr[dimension * i + j] = average;
                     continueFlag = true;
                 }
@@ -54,12 +61,12 @@ int main() {
 
 // use this for putting in custom test data
 //    double arr[] = {
-//            1.000000, 2.000000, 4.000000, 0.000000, 4.000000, 4.000000,
-//            3.000000, 3.000000, 2.000000, 4.000000, 0.000000, 0.000000,
-//            1.000000, 2.000000, 1.000000, 1.000000, 0.000000, 2.000000,
-//            2.000000, 1.000000, 1.000000, 4.000000, 2.000000, 3.000000,
-//            2.000000, 2.000000, 1.000000, 1.000000, 3.000000, 0.000000,
-//            2.000000, 1.000000, 1.000000, 3.000000, 4.000000, 2.000000,
+//            2.096136, 0.763294, 0.681351, 0.471130, 1.281154, 1.353358,
+//            2.892621, 1.282842, 2.719666, 1.423470, 2.259687, 1.566266,
+//            2.235410, 1.539452, 1.566639, 2.495058, 0.435476, 2.037410,
+//            0.750322, 1.663466, 0.879023, 1.740040, 0.846988, 0.333857,
+//            1.138607, 2.561096, 0.339483, 2.686907, 2.853677, 0.757116,
+//            1.847040, 2.198303, 1.881920, 0.435748, 0.622504, 1.426581
 //    };
 
     // fill array with random numbers

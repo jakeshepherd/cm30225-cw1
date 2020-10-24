@@ -78,7 +78,7 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/jakeshepherd/Parallel/Coursework1/main.c">
+		<Unit filename="/Users/jakeshepherd/Parallel/Coursework1/SequentialAverage.c">
 			<Option target="Coursework1"/>
 		</Unit>
 		<Unit filename="/Users/jakeshepherd/Parallel/Coursework1/CMakeLists.txt">

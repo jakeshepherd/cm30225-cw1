@@ -77,27 +77,27 @@ include CMakeFiles/Coursework1.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Coursework1.dir/flags.make
 
-CMakeFiles/Coursework1.dir/main.c.o: CMakeFiles/Coursework1.dir/flags.make
-CMakeFiles/Coursework1.dir/main.c.o: ../main.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/jakeshepherd/Parallel/Coursework1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/Coursework1.dir/main.c.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Coursework1.dir/main.c.o   -c /Users/jakeshepherd/Parallel/Coursework1/main.c
+CMakeFiles/Coursework1.dir/SequentialAverage.c.o: CMakeFiles/Coursework1.dir/flags.make
+CMakeFiles/Coursework1.dir/SequentialAverage.c.o: ../SequentialAverage.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/jakeshepherd/Parallel/Coursework1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/Coursework1.dir/SequentialAverage.c.o"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/Coursework1.dir/SequentialAverage.c.o   -c /Users/jakeshepherd/Parallel/Coursework1/SequentialAverage.c
 
-CMakeFiles/Coursework1.dir/main.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Coursework1.dir/main.c.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/jakeshepherd/Parallel/Coursework1/main.c > CMakeFiles/Coursework1.dir/main.c.i
+CMakeFiles/Coursework1.dir/SequentialAverage.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Coursework1.dir/SequentialAverage.c.i"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/jakeshepherd/Parallel/Coursework1/SequentialAverage.c > CMakeFiles/Coursework1.dir/SequentialAverage.c.i
 
-CMakeFiles/Coursework1.dir/main.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Coursework1.dir/main.c.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/jakeshepherd/Parallel/Coursework1/main.c -o CMakeFiles/Coursework1.dir/main.c.s
+CMakeFiles/Coursework1.dir/SequentialAverage.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Coursework1.dir/SequentialAverage.c.s"
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/jakeshepherd/Parallel/Coursework1/SequentialAverage.c -o CMakeFiles/Coursework1.dir/SequentialAverage.c.s
 
 # Object files for target Coursework1
 Coursework1_OBJECTS = \
-"CMakeFiles/Coursework1.dir/main.c.o"
+"CMakeFiles/Coursework1.dir/SequentialAverage.c.o"
 
 # External object files for target Coursework1
 Coursework1_EXTERNAL_OBJECTS =
 
-Coursework1: CMakeFiles/Coursework1.dir/main.c.o
+Coursework1: CMakeFiles/Coursework1.dir/SequentialAverage.c.o
 Coursework1: CMakeFiles/Coursework1.dir/build.make
 Coursework1: CMakeFiles/Coursework1.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/jakeshepherd/Parallel/Coursework1/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable Coursework1"

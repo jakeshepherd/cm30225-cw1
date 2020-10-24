@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/Coursework1.dir/main.c.o"
+  "CMakeFiles/Coursework1.dir/SequentialAverage.c.o"
   "Coursework1"
   "Coursework1.pdb"
 )
