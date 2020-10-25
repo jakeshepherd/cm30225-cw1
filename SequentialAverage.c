@@ -8,12 +8,21 @@ double calculateMean(double w, double x, double y, double z) {
     return (w + x + y + z) / 4;
 }
 
-double *doAveraging(double *arr, int dimension) {
-    bool continueFlag = true;
-    double accuracy = 0.01, average;
-    int loopCount = 0;
+double *populateMainArray(int dimension) {
+    int randLimit = 100;
+    double *arr = (double *) malloc((unsigned) (dimension * dimension) * sizeof(double));
 
-    // take a copy of the original array so that all the values for the average are the original
+    // fill array with random numbers
+    for (int i = 0; i < dimension; i++) {
+        for (int j = 0; j < dimension; j++) {
+            arr[dimension * i + j] = (double) rand() / (float) (RAND_MAX / randLimit);
+        }
+    }
+
+    return arr;
+}
+
+double *populateTempArray(double *arr, int dimension) {
     double *tempArray = (double *) malloc((unsigned) (dimension * dimension) * sizeof(double));
 
     for (int i = 0; i < dimension; i++) {
@@ -21,6 +30,17 @@ double *doAveraging(double *arr, int dimension) {
             tempArray[dimension * i * j] = arr[dimension * i + j];
         }
     }
+
+    return tempArray;
+}
+
+double *relaxationMethod(double *arr, int dimension) {
+    int loopCount = 0;
+    double accuracy = 0.01, average;
+    bool continueFlag = true;
+
+    // take a copy of the original array so that all the values for the average are the original
+    double *tempArray = populateTempArray(arr, dimension);
 
     while (continueFlag == true) {
         continueFlag = false;
@@ -62,9 +82,15 @@ double *doAveraging(double *arr, int dimension) {
     return arr;
 }
 
-int main() {
-    int randLimit = 100, dimension = 6;
-    double *arr = (double *) malloc((unsigned) (dimension * dimension) * sizeof(double));
+int main(int argc, char **argv) {
+    int dimension;
+    if (argc > 1) {
+        dimension = atoi(argv[1]);
+    } else {
+        dimension = 6;
+    }
+
+    double *arr = populateMainArray(dimension);
 
 // use this for putting in custom test data
 //    double arr[] = {
@@ -76,16 +102,10 @@ int main() {
 //            1.847040, 2.198303, 1.881920, 0.435748, 0.622504, 1.426581
 //    };
 
-    // fill array with random numbers
-    for (int i = 0; i < dimension; i++) {
-        for (int j = 0; j < dimension; j++) {
-            arr[dimension * i + j] = (double) rand() / (float) (RAND_MAX / randLimit);
-        }
-    }
 
     // start the clock for the averaging off the array
     clock_t begin = clock();
-    doAveraging(arr, dimension);
+    relaxationMethod(arr, dimension);
     clock_t end = clock();
 
     printf("TIME TAKEN: %f \n", (double)(end - begin));
