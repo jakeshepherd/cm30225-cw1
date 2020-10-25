@@ -82,7 +82,6 @@ void relaxationMethod(double *arr, int dimension) {
     printArray(arr, dimension);
 
     free(tempArray);
-//    return arr;
 }
 
 int main(int argc, char **argv) {
