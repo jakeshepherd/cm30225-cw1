@@ -10,7 +10,7 @@ double calculateMean(double w, double x, double y, double z) {
 
 double *populateMainArray(int dimension) {
     int randLimit = 100;
-    double *arr = (double *) malloc((unsigned) (dimension * dimension) * sizeof(double));
+    double *arr = malloc((unsigned long) dimension * (unsigned long) dimension * sizeof(double));
 
     // fill array with random numbers
     for (int i = 0; i < dimension; i++) {
@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
     relaxationMethod(arr, dimension);
     clock_t end = clock();
 
-    printf("TIME TAKEN: %f \n", (double)(end - begin));
+    printf("TIME TAKEN: %f \n", (double) (end - begin));
 
     free(arr);
 
