@@ -15,7 +15,12 @@ double *doAveraging(double *arr, int dimension) {
 
     // take a copy of the original array so that all the values for the average are the original
     double *tempArray = (double *) malloc((unsigned) (dimension * dimension) * sizeof(double));
-    tempArray = arr;
+
+    for (int i = 0; i < dimension; i++) {
+        for (int j = 0; j < dimension; j++) {
+            tempArray[dimension * i * j] = arr[dimension * i + j];
+        }
+    }
 
     while (continueFlag == true) {
         continueFlag = false;
@@ -34,6 +39,7 @@ double *doAveraging(double *arr, int dimension) {
                  * and replace old center value with the new average
                  */
                 if (fabs(tempArray[dimension * i + j] - average) > accuracy) {
+                    tempArray[dimension * i + j] = arr[dimension * i + j];
                     arr[dimension * i + j] = average;
                     continueFlag = true;
                 }
@@ -52,6 +58,7 @@ double *doAveraging(double *arr, int dimension) {
         printf("\n");
     }
 
+    free(tempArray);
     return arr;
 }
 
