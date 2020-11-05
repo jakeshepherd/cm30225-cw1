@@ -4,59 +4,63 @@
 #include <math.h>
 #include <pthread.h>
 
+double *writeVals;
+double *readVals;
+int dimension;
+double precision;
+bool hasConverged = false;
 int whileLoopCounter = 0;
 
-struct RowArgs {
-    double top, bottom, left, right, middle;
-};
-
-void *processRow(void* args) {
-    double *values = (double*) args;
-    long newAvg = (values[0]+values[1]+values[2]+values[3]) / 4;
-
-//    printf("new average: : %f\n", newAvg);
-    pthread_exit((void *) newAvg);
-}
-
-void relaxationParallel(
-        double *values, // entire 2D array
-        int dimension,
-        // int numOfThreads,
-        double precision
-) {
-    bool hasConverged = false;
-    pthread_t threadList[dimension];
-    int rc;
-
-    // create thread pool
-    int numberOfThreads = (dimension-1)*(dimension-1);
-
-    while (!hasConverged) {
-        for (int i = 1; i < dimension-1; i++) {
-            for (int j = 1; j < dimension-1; j++) {
-                double args[] = {
-                        values[dimension * (i-1) + j],
-                        values[dimension * (i+1) + j],
-                        values[dimension * i + (j-1)],
-                        values[dimension * i + (j+1)]};
-
-                rc = pthread_create(&threadList[i-1], NULL, processRow, (void *)&args);
-                if (rc){
-                    printf("ERROR; return code from pthread_create() is %d\n", rc);
-                    exit(-1);
-                }
-            }
-        }
-
-        // wait for all threads to finish
-        for (int i=0; i<dimension; i++) {
-            void *returnVal;
-            pthread_join(threadList[i], &returnVal);
-
-            printf("FROM THREAD: %ld\n", (long) returnVal);
-            hasConverged = true;
+void arrayCopy(double *arr, double *tempArray, int dimension) {
+    for (int i = 0; i < dimension; i++) {
+        for (int j = 0; j < dimension; j++) {
+            tempArray[dimension * i + j] = arr[dimension * i + j];
         }
     }
+}
+
+struct ProcessRowArgs {
+    int rowStart;
+    int rowEnd;
+    int threadNum;
+};
+
+void setHasConverged(bool b) {
+    // pthread_mutex_lock(&convergeMutex);
+    hasConverged = b;
+    // pthread_mutex_unlock(&convergeMutex);
+}
+
+void updateValue(int x, int y) {
+    double oldValue = readVals[dimension * x + y];
+    double newValue = (
+                              readVals[dimension * (x+1) + y] +
+                              readVals[dimension * (x-1) + y] +
+                              readVals[dimension * x + (y+1)] +
+                              readVals[dimension * x + (y-1)]
+                      ) / 4;
+
+    if (fabs(oldValue - newValue) > precision) {
+        // pthread_mutex_lock(&updateMutex);
+        writeVals[dimension * x + y] = newValue;
+        setHasConverged(false);
+        // pthread_mutex_unlock(&updateMutex);
+    }
+}
+
+void processRow(void *vArgs) {
+    struct ProcessRowArgs *args = (struct ProcessRowArgs*) vArgs;
+
+    for (int i = args->rowStart; i <= args->rowEnd; i++) {
+        for (int j = 1; j < dimension - 1; j++) {
+            updateValue(i, j);
+        }
+    }
+
+    printf("> %d.%d - thread done.\n", whileLoopCounter, args->threadNum);
+
+    pthread_barrier_wait(&barrier);
+    pthread_exit(NULL);
 }
 
 void printArray(double *arr, int dimension) {
@@ -68,36 +72,104 @@ void printArray(double *arr, int dimension) {
     }
 }
 
+void relaxParallel(int numOfThreads) {
+    int rowsPerThread = (dimension - 2) / numOfThreads;
+    printf("\n-> Each thread gets %d rows.", rowsPerThread);
+
+    // init mutex
+    // pthread_mutex_init(&updateMutex, NULL);
+    // pthread_mutex_init(&convergeMutex, NULL);
+
+    while (!hasConverged) {
+        printf("\n===============================================================\n");
+        printf("\nIteration %d.\n", whileLoopCounter);
+        setHasConverged(true);
+
+        // re-init barrier
+        printf("- Init barrier - waiting on %d threads.\n", (unsigned) numOfThreads);
+//        pthread_barrier_init (&barrier, NULL, (unsigned) numOfThreads + 1);
+        // update read/write vals
+        arrayCopy(writeVals, readVals, dimension);
+
+        for (int i = 0; i < numOfThreads; i++) {
+            int startRow = rowsPerThread * i + 1;
+            int endRow = startRow + (rowsPerThread-1);
+
+            struct ProcessRowArgs *params = malloc(sizeof(struct ProcessRowArgs));
+            params->rowStart = startRow;
+            params->rowEnd = endRow;
+            params->threadNum = i;
+
+            pthread_t thr;
+            int cv = pthread_create(&thr, NULL, (void *) processRow, params);
+            if (cv != 0) {
+                printf("\n[ERROR] error in pthread_create.\n");
+                exit(-1);
+            }
+        }
+        // wait for threads to finish
+//        pthread_barrier_wait(&barrier);
+        printf("- Barrier Hit!\n");
+
+        whileLoopCounter++;
+        if (whileLoopCounter >= 100) {
+            printf("\n\n!! Max iterations (100) reached.\n\n");
+            break;
+        }
+    }
+
+    // pthread_mutex_destroy(&updateMutex);
+    // pthread_mutex_destroy(&convergeMutex);
+//    pthread_barrier_destroy(&barrier);
+}
+
+double *populateMainArray(double *arr, int dimension) {
+    int randLimit = 100;
+
+    // fill array with random numbers
+    for (int i = 0; i < dimension; i++) {
+        for (int j = 0; j < dimension; j++) {
+            arr[dimension * i + j] = (double) rand() / (float) (RAND_MAX / randLimit);
+        }
+    }
+
+    return arr;
+}
+
 int main(void) {
-    int arrDim = 6;
-    double precision = 0.01;
+    dimension = 6;
+    precision = 0.01;
 
-    printf("\ndimensions: [%dx%d]\n", arrDim, arrDim);
-    printf("precision: %f\n\n", precision);
+    writeVals = malloc((unsigned) dimension * (unsigned) dimension * sizeof(double));
+    populateMainArray(writeVals, dimension);
 
-    // unsigned long longDim = (unsigned long) arrDim;
-    // double *arr = malloc(longDim * longDim * sizeof(double));
-    // populateWithTestData(arr, arrDim);
+    readVals = malloc((unsigned) dimension * (unsigned) dimension * sizeof(double));
+    arrayCopy(writeVals, readVals, dimension);
 
-    double arr[] = {
-            2.096136, 0.763294, 0.681351, 0.471130, 1.281154, 1.353358,
-            2.892621, 1.282842, 2.719666, 1.423470, 2.259687, 1.566266,
-            2.235410, 1.539452, 1.566639, 2.495058, 0.435476, 2.037410,
-            0.750322, 1.663466, 0.879023, 1.740040, 0.846988, 0.333857,
-            1.138607, 2.561096, 0.339483, 2.686907, 2.853677, 0.757116,
-            1.847040, 2.198303, 1.881920, 0.435748, 0.622504, 1.426581
-    };
+    // copy ready for sequential
+    double *seqArr = malloc((unsigned) dimension * (unsigned) dimension * sizeof(double));
+    arrayCopy(writeVals, seqArr, dimension);
 
-    printf("initial array:\n");
-    printArray(arr, arrDim);
+    printf("\n===============================================================");
+    printf("\nInitial array:\n\n");
+    printArray(writeVals, dimension);
 
-    relaxationParallel(arr, arrDim, precision);
+    printf("\n===============================================================\n");
+    printf("Running parallel!");
+    clock_t start, end;
+    double cpu_time_used;
 
-    printf("\nresult (after %d iterations):\n", whileLoopCounter);
-    printArray(arr, arrDim);
+    int numberOfThreads = 4;
+    start = clock();
+    relaxParallel(numberOfThreads);
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+
+    printf("\n===============================================================");
+    printf("\nParallel result (after %d iterations):\n", whileLoopCounter);
+    printf("Time: %f\n\n", cpu_time_used);
+    printArray(writeVals, dimension);
     printf("\n");
-
-    // free(arr);
 
     return 0;
 }

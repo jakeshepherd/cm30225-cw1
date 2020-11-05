@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
     relaxationMethod(arr, dimension);
     clock_t end = clock();
 
-    printf("TIME TAKEN: %f \n", (double) (end - begin));
+    printf("TIME TAKEN: %f \n", (double) (end - begin) / CLOCKS_PER_SEC);
 
     free(arr);
 
